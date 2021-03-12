@@ -171,6 +171,6 @@ class ELearning:
         return True
 
 if __name__ == "__main__":
-    siswa = ELearning('nizamabdullah@smkn2-solo.net', '20112002', 'Nizam Abdullah / 23 - Hadir')
+    siswa = ELearning('username@smkn2-solo.net', 'password', 'pesan_hadir - Hadir')
     siswa.run()
     
