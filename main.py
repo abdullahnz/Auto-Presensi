@@ -30,7 +30,7 @@ class ELearning:
         return s.get(self.URL['front']).text
     
     def doLogin(self):
-        print(f'INFO: Trying login with user \'{self.username}\' ... ')
+        print(f'INFO: Trying to login with user \'{self.username}\' ... ')
         
         data = {
             'userName' : self.username,
