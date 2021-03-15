@@ -3,12 +3,12 @@
 Simple code, writen with python3.7 for automatically absen in my school's e-learning system.
 
 ## Usage
-
+ 
 Just run it at the time, it will be automatically comment with `pesan_absen` in active session discuss.
 
 ```bash
 $ python3 main.py 
-INFO: Trying login with user 'nizamabdullah@smkn2-solo.net' ... 
+INFO: Trying to login with user 'nizamabdullah@smkn2-solo.net' ... 
 INFO: Successfully login with username 'nizamabdullah@smkn2-solo.net'.
 INFO: Checking 'mapel' for today ...
 INFO: Found 3 mapel for today.
