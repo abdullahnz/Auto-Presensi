@@ -186,7 +186,7 @@ class ELearning:
         return True
 
 if __name__ == "__main__":
-    student = ELearning('nizamabdullah@smkn2-solo.net', '20112002', 'Nizam Abdullah / 23 - Hadir')
+    student = ELearning('username@smkn2-solo.net', 'password', 'pesan_hadir - Hadir')
     
     # showDiscuss, by default is False.
     # If you want to disable this feature, just remove the `showDiscuss` param
