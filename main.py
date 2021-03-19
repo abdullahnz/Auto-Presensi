@@ -18,7 +18,7 @@ class ELearning:
         'discuss' : BASE + 'pages/classroom/ajax/getDiscussion.php?id=',
     }
 
-    IS_STARTED = 'sedang berlangsung'
+    TODO = 'terjadwal'
     
     # Constructor
     def __init__(self, username, password, message):
@@ -46,6 +46,9 @@ class ELearning:
         return False
 
     def getDiscussion(self, enroll_id):
+        # check absen
+        isAbsent = 0
+
         # Get source data of discussion page by enroll_id.
         content = s.get(self.URL['discuss'] + str(enroll_id)).text
         content = BeautifulSoup(content, 'html.parser')
@@ -65,19 +68,25 @@ class ELearning:
             # Parsing and convert to dictionary data
             result[i] = {
                 'from' : info[3],
-                'message' : message.strip(),
+                'message' : message.strip().replace('Powered by Froala Editor', ''),
                 'day' : ' '.join(info[0:2]),
                 'time' : info[2],
             }
 
-        return result
+            # check absen
+            if info[3] == self.username:
+                isAbsent = 1
 
-    def printInfoSubject(self, data):
+        return result, isAbsent
+
+    def printInfoSubject(self, data, isAbsent=False):
         result  = f"\nINFO: {data['mapel']} (ID: {data['enroll_id']})\n"
         result += f"      Guru   : {data['guru']}\n"
         result += f"      Time   : {data['time_start']} - {data['time_end']}\n"
-        result += f"      Status : {data['status']}\n"
-        result += f"      Materi : {data['materi']}"
+        result += f"      Status : {data['status']} "
+        if isAbsent:
+            result += "(enrolled)"
+        result += f"\n      Materi : {data['materi']}"
         print(result)
 
     def parseTable(self, content):
@@ -124,15 +133,8 @@ class ELearning:
         
         # Post absen requests data.
         s.post(path, data=data)
-        
-        # Get all discussions on a subjects by enroll_id.
-        discuss = self.getDiscussion(enroll_id)
 
-        # Printing all of discuss info to user.
-        for i in range(len(discuss)):
-            print(f"   - [{discuss[i]['time']}] \"{discuss[i]['message']}\" (from: {discuss[i]['from'].split('@')[0]})")
-
-    def run(self):
+    def run(self, showDiscuss=False):
         # Do login and check if the user isLoggedIn successfully.
         # It will return / exit if the user can't login.
         if self.doLogin():
@@ -158,19 +160,36 @@ class ELearning:
             
             # Get dictionary data by keys
             data = subData[keys]
-
-            # Print out info of the data.
-            self.printInfoSubject(data)
             
-            if data['status'] == self.IS_STARTED:
-                # Just info message like debug again and again :)
-                print(f'\nINFO: Do absen and get all discussion (ID: {data["enroll_id"]})')
+            if data['status'] != self.TODO:
+                # Get all discussions on a subjects by enroll_id.
+                discuss, isAbsent = self.getDiscussion(data['enroll_id'])
+
+                if not isAbsent:
+                    # Do absen
+                    print(f'\nINFO: Do absent (ID: {data["enroll_id"]})')
+                    self.doAbsent(data['enroll_id'])
+
+                # Print out info of the data.
+                self.printInfoSubject(data, isAbsent)
+                    
+                # Printing all of discuss info to user.
+                if showDiscuss:
+                    print(f'\nINFO: Discussion:')
+                    for i in range(len(discuss)):
+                        print(f"   - [{discuss[i]['time']}] \"{discuss[i]['message']}\" (from: {discuss[i]['from'].split('@')[0]})")
                 
-                # Do absen
-                self.doAbsent(data['enroll_id'])
+            else:
+                # Print out info of the data.
+                self.printInfoSubject(data)
+
         return True
 
 if __name__ == "__main__":
-    siswa = ELearning('username@smkn2-solo.net', 'password', 'pesan_hadir - Hadir')
-    siswa.run()
+    student = ELearning('nizamabdullah@smkn2-solo.net', '20112002', 'Nizam Abdullah / 23 - Hadir')
     
+    # showDiscuss, by default is False.
+    # If you want to disable this feature, just remove the `showDiscuss` param
+    # or change the value of `showDiscuss` to `False`.
+    student.run(showDiscuss=True)
+
