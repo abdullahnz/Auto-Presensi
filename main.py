@@ -162,8 +162,7 @@ class ELearning:
             data = subData[keys]
             
             if data['status'] != self.TODO:
-                # Get all discussions on a subjects by enroll_id.
-                discuss, isAbsent = self.getDiscussion(data['enroll_id'])
+                _, isAbsent = self.getDiscussion(data['enroll_id'])
 
                 if not isAbsent:
                     # Do absen
@@ -175,10 +174,11 @@ class ELearning:
                     
                 # Printing all of discuss info to user.
                 if showDiscuss:
+                    # Get all discussions on a subjects by enroll_id.
+                    discuss, _ = self.getDiscussion(data['enroll_id'])
                     print(f'\nINFO: Discussion:')
                     for i in range(len(discuss)):
                         print(f"   - [{discuss[i]['time']}] \"{discuss[i]['message']}\" (from: {discuss[i]['from'].split('@')[0]})")
-                
             else:
                 # Print out info of the data.
                 self.printInfoSubject(data)
